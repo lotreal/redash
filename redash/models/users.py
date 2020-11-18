@@ -8,6 +8,7 @@ from operator import or_
 from flask import current_app as app, url_for, request_started
 from flask_login import current_user, AnonymousUserMixin, UserMixin
 from passlib.apps import custom_app_context as pwd_context
+from sqlalchemy import cast, or_
 from sqlalchemy.exc import DBAPIError
 from sqlalchemy.dialects import postgresql
 
@@ -76,9 +77,43 @@ class PermissionsCheckMixin(object):
         return has_permissions
 
 
+class RoleMixin(object):
+    """
+    Role-based access control based on Redash groups
+    """
+    def current_roles(self):
+        return [f"role:{group_id}" for group_id in self.group_ids]
+
+    def get_admin_roles(self):
+        return ['admin', 'super_admin']
+
+    def is_admin_role(self):
+        return any([permission in self.get_admin_roles() for permission in self.permissions])
+
+    def filter_by_roles(self, result_set, tags_column):
+        if self.is_admin_role():
+            return result_set
+
+        role_tags = self.current_roles()
+
+        if role_tags:
+            role_array = cast(tags_column, postgresql.ARRAY(db.Text))
+            criterion = [role_array.contains([tag]) for tag in role_tags]
+            result_set = result_set.filter(or_(*criterion))
+        return result_set
+
+    def has_roles(self, allow_roles):
+        has_permissions = reduce(
+            lambda a, b: a or b,
+            [role in self.current_roles() for role in allow_roles],
+            False,
+        )
+        return has_permissions
+
+
 @generic_repr("id", "name", "email")
 class User(
-    TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCheckMixin
+    TimestampMixin, db.Model, BelongsToOrgMixin, UserMixin, PermissionsCheckMixin, RoleMixin
 ):
     id = primary_key("User")
     org_id = Column(key_type("Organization"), db.ForeignKey("organizations.id"))

@@ -66,6 +66,7 @@ class DashboardListResource(BaseResource):
             )
 
         results = filter_by_tags(results, models.Dashboard.tags)
+        results = self.current_user.filter_by_roles(results, models.Dashboard.tags)
 
         # order results according to passed order parameter,
         # special-casing search queries where the database
@@ -154,7 +155,7 @@ class DashboardResource(BaseResource):
         else:
             fn = models.Dashboard.get_by_id_and_org
 
-        dashboard = get_object_or_404(fn, dashboard_id, self.current_org)
+        dashboard = get_object_or_404(fn, dashboard_id, self.current_org, x_user=self.current_user)
         response = DashboardSerializer(
             dashboard, with_widgets=True, user=self.current_user
         ).serialize()
@@ -364,6 +365,7 @@ class DashboardFavoriteListResource(BaseResource):
             favorites = models.Dashboard.favorites(self.current_user)
 
         favorites = filter_by_tags(favorites, models.Dashboard.tags)
+        favorites = self.current_user.filter_by_roles(favorites, models.Dashboard.tags)
 
         # order results according to passed order parameter,
         # special-casing search queries where the database

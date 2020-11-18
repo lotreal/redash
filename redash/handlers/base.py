@@ -70,12 +70,18 @@ def require_fields(req, fields):
 
 
 def get_object_or_404(fn, *args, **kwargs):
+    user = kwargs.pop('x_user', None)
     try:
         rv = fn(*args, **kwargs)
         if rv is None:
             abort(404)
     except NoResultFound:
         abort(404)
+
+    if user is not None and (not user.is_admin_role()):
+        if isinstance(rv.tags, list) and (not user.has_roles(rv.tags)):
+            abort(404)
+
     return rv
 
 
