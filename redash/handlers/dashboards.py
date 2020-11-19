@@ -8,6 +8,7 @@ from redash.handlers.base import (
     get_object_or_404,
     paginate,
     filter_by_tags,
+    is_special_tag,
     order_results as _order_results,
 )
 from redash.permissions import (
@@ -82,6 +83,10 @@ class DashboardListResource(BaseResource):
             page_size=page_size,
             serializer=DashboardSerializer,
         )
+
+        if not self.current_user.is_admin_role():
+            for dashboard in response['results']:
+                dashboard['tags'] = [tag for tag in dashboard['tags'] if not is_special_tag(tag)]
 
         if search_term:
             self.record_event(
@@ -344,7 +349,10 @@ class DashboardTagsResource(BaseResource):
         Lists all accessible dashboards.
         """
         tags = models.Dashboard.all_tags(self.current_org, self.current_user)
-        return {"tags": [{"name": name, "count": count} for name, count in tags]}
+        if self.current_user.is_admin_role():
+            return {"tags": [{"name": name, "count": count} for name, count in tags]}
+        else:
+            return {"tags": [{"name": name, "count": count} for name, count in tags if not is_special_tag(name)]}
 
 
 class DashboardFavoriteListResource(BaseResource):
