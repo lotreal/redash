@@ -24,6 +24,12 @@ from .human_time import parse_human_time
 COMMENTS_REGEX = re.compile("/\*.*?\*/")
 WRITER_ENCODING = os.environ.get("REDASH_CSV_WRITER_ENCODING", "utf-8")
 WRITER_ERRORS = os.environ.get("REDASH_CSV_WRITER_ERRORS", "strict")
+DATE_FORMAT_MAPPING = {
+    'YYYY-MM-DD': '%Y-%m-%d',
+    'YYYY.MM.DD': '%Y.%m.%d',
+    "DD/MM/YY": '%d/%m/%y',
+    "MM/DD/YY": '%m/%d/%y',
+}
 
 
 def utcnow():
@@ -242,3 +248,22 @@ def add_limit_to_query(query):
     else:
         parsed_query.tokens += limit_tokens
     return str(parsed_query)
+
+
+def convert_date_format(value, out, ori='YYYY-MM-DD'):
+    _out = DATE_FORMAT_MAPPING.get(out, None)
+    if _out is None:
+        return value
+
+    try:
+        _ori = DATE_FORMAT_MAPPING.get(ori, None)
+        dt = datetime.datetime.strptime(str(value), _ori)
+        return dt.strftime(_out)
+    except ValueError:
+        return value
+
+
+def convert_date_format_for_date_parameters(parameter_values, date_format):
+    for key in parameter_values:
+        parameter_values[key] = convert_date_format(parameter_values.get(key), date_format)
+        print(key, '->', parameter_values.get(key))

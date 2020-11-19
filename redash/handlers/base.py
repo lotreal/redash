@@ -128,10 +128,6 @@ def filter_by_tags(result_set, column):
     return result_set
 
 
-def is_special_tag(tag):
-    return ':' in tag
-
-
 def order_results(results, default_order, allowed_orders, fallback=True):
     """
     Orders the given results with the sort order as requested in the

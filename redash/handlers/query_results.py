@@ -23,6 +23,7 @@ from redash.utils import (
     json_dumps,
     utcnow,
     to_filename,
+    convert_date_format_for_date_parameters,
 )
 from redash.models.parameterized_query import (
     ParameterizedQuery,
@@ -276,6 +277,8 @@ class QueryResultResource(BaseResource):
         """
         params = request.get_json(force=True, silent=True) or {}
         parameter_values = params.get("parameters", {})
+        date_format = self.current_org.settings['settings']['date_format']
+        convert_date_format_for_date_parameters(parameter_values, date_format)
 
         max_age = params.get("max_age", -1)
         # max_age might have the value of None, in which case calling int(None) will fail
