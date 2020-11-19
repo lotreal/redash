@@ -266,4 +266,3 @@ def convert_date_format(value, out, ori='YYYY-MM-DD'):
 def convert_date_format_for_date_parameters(parameter_values, date_format):
     for key in parameter_values:
         parameter_values[key] = convert_date_format(parameter_values.get(key), date_format)
-        print(key, '->', parameter_values.get(key))
