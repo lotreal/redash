@@ -10,6 +10,7 @@ from redash.handlers.base import (
     filter_by_tags,
     order_results as _order_results,
 )
+from redash.utils import is_special_tag
 from redash.permissions import (
     can_modify,
     require_admin_or_owner,
@@ -350,7 +351,7 @@ class DashboardTagsResource(BaseResource):
         if self.current_user.is_admin_role():
             return {"tags": [{"name": name, "count": count} for name, count in tags]}
         else:
-            return {"tags": [{"name": name, "count": count} for name, count in tags if not models.is_special_tag(name)]}
+            return {"tags": [{"name": name, "count": count} for name, count in tags if not is_special_tag(name)]}
 
 
 class DashboardFavoriteListResource(BaseResource):

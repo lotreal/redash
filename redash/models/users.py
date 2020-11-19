@@ -16,7 +16,7 @@ from sqlalchemy_utils import EmailType
 from sqlalchemy_utils.models import generic_repr
 
 from redash import redis_connection
-from redash.utils import generate_token, utcnow, dt_from_timestamp
+from redash.utils import generate_token, utcnow, dt_from_timestamp, is_special_tag
 
 from .base import db, Column, GFKBase, key_type, primary_key
 from .mixins import TimestampMixin, BelongsToOrgMixin
@@ -75,10 +75,6 @@ class PermissionsCheckMixin(object):
         )
 
         return has_permissions
-
-
-def is_special_tag(tag):
-    return ':' in tag
 
 
 class RoleMixin(object):
