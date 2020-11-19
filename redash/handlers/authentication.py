@@ -247,7 +247,7 @@ def base_href():
 
 def date_time_format_config():
     date_format = current_org.get_setting("date_format")
-    date_format_list = set(["DD/MM/YY", "MM/DD/YY", "YYYY-MM-DD", settings.DATE_FORMAT])
+    date_format_list = set(["DD/MM/YY", "MM/DD/YY", "YYYY-MM-DD", "YYYY.MM.DD", settings.DATE_FORMAT])
     time_format = current_org.get_setting("time_format")
     time_format_list = set(["HH:mm", "HH:mm:ss", "HH:mm:ss.SSS", settings.TIME_FORMAT])
     return {
