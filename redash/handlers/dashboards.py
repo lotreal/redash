@@ -8,7 +8,6 @@ from redash.handlers.base import (
     get_object_or_404,
     paginate,
     filter_by_tags,
-    is_special_tag,
     order_results as _order_results,
 )
 from redash.permissions import (
@@ -83,9 +82,7 @@ class DashboardListResource(BaseResource):
             serializer=DashboardSerializer,
         )
 
-        if not self.current_user.is_admin_role():
-            for dashboard in response['results']:
-                dashboard['tags'] = [tag for tag in dashboard['tags'] if not is_special_tag(tag)]
+        self.current_user.filter_special_tags(response['results'])
 
         if search_term:
             self.record_event(
@@ -179,6 +176,8 @@ class DashboardResource(BaseResource):
         self.record_event(
             {"action": "view", "object_id": dashboard.id, "object_type": "dashboard"}
         )
+
+        self.current_user.filter_special_tags(response)
 
         return response
 
@@ -351,7 +350,7 @@ class DashboardTagsResource(BaseResource):
         if self.current_user.is_admin_role():
             return {"tags": [{"name": name, "count": count} for name, count in tags]}
         else:
-            return {"tags": [{"name": name, "count": count} for name, count in tags if not is_special_tag(name)]}
+            return {"tags": [{"name": name, "count": count} for name, count in tags if not models.is_special_tag(name)]}
 
 
 class DashboardFavoriteListResource(BaseResource):

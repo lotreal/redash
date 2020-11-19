@@ -77,6 +77,10 @@ class PermissionsCheckMixin(object):
         return has_permissions
 
 
+def is_special_tag(tag):
+    return ':' in tag
+
+
 class RoleMixin(object):
     """
     Role-based access control based on Redash groups
@@ -101,6 +105,16 @@ class RoleMixin(object):
             criterion = [role_array.contains([tag]) for tag in role_tags]
             query = query.filter(or_(*criterion))
         return query
+
+    def filter_special_tags(self, vo):
+        if self.is_admin_role():
+            return
+
+        if isinstance(vo, list):
+            for _vo in vo:
+                _vo['tags'] = [tag for tag in _vo['tags'] if not is_special_tag(tag)]
+        else:
+            vo['tags'] = [tag for tag in vo['tags'] if not is_special_tag(tag)]
 
     def has_roles(self, allow_roles):
         has_permissions = reduce(
