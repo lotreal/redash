@@ -1111,7 +1111,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         return utils.slugify(self.name)
 
     @classmethod
-    def all(cls, org, group_ids, user_id):
+    def all(cls, org, user):
         query = (
             Dashboard.query.options(
                 joinedload(Dashboard.user).load_only(
@@ -1127,8 +1127,8 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
             .filter(
                 Dashboard.is_archived == False,
                 (
-                    DataSourceGroup.group_id.in_(group_ids)
-                    | (Dashboard.user_id == user_id)
+                    DataSourceGroup.group_id.in_(user.group_ids)
+                    | (Dashboard.user_id == user.id)
                 ),
                 Dashboard.org == org,
             )
@@ -1136,21 +1136,22 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
         )
 
         query = query.filter(
-            or_(Dashboard.user_id == user_id, Dashboard.is_draft == False)
+            or_(Dashboard.user_id == user.id, Dashboard.is_draft == False)
         )
 
+        query = user.filter_by_roles(query, Dashboard.tags)
         return query
 
     @classmethod
-    def search(cls, org, groups_ids, user_id, search_term):
+    def search(cls, org, user, search_term):
         # TODO: switch to FTS
-        return cls.all(org, groups_ids, user_id).filter(
+        return cls.all(org, user).filter(
             cls.name.ilike("%{}%".format(search_term))
         )
 
     @classmethod
     def all_tags(cls, org, user):
-        dashboards = cls.all(org, user.group_ids, user.id)
+        dashboards = cls.all(org, user)
 
         tag_column = func.unnest(cls.tags).label("tag")
         usage_count = func.count(1).label("usage_count")
@@ -1166,7 +1167,7 @@ class Dashboard(ChangeTrackingMixin, TimestampMixin, BelongsToOrgMixin, db.Model
     @classmethod
     def favorites(cls, user, base_query=None):
         if base_query is None:
-            base_query = cls.all(user.org, user.group_ids, user.id)
+            base_query = cls.all(user.org, user)
         return base_query.join(
             (
                 Favorite,

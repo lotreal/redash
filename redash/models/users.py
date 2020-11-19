@@ -90,17 +90,17 @@ class RoleMixin(object):
     def is_admin_role(self):
         return any([permission in self.get_admin_roles() for permission in self.permissions])
 
-    def filter_by_roles(self, result_set, tags_column):
+    def filter_by_roles(self, query, roles):
         if self.is_admin_role():
-            return result_set
+            return query
 
         role_tags = self.current_roles()
 
         if role_tags:
-            role_array = cast(tags_column, postgresql.ARRAY(db.Text))
+            role_array = cast(roles, postgresql.ARRAY(db.Text))
             criterion = [role_array.contains([tag]) for tag in role_tags]
-            result_set = result_set.filter(or_(*criterion))
-        return result_set
+            query = query.filter(or_(*criterion))
+        return query
 
     def has_roles(self, allow_roles):
         has_permissions = reduce(
