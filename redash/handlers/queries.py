@@ -26,7 +26,7 @@ from redash.permissions import (
     require_permission,
     view_only,
 )
-from redash.utils import collect_parameters_from_request
+from redash.utils import collect_parameters_from_request, base64_decode as decrypt
 from redash.serializers import QuerySerializer
 from redash.models.parameterized_query import ParameterizedQuery
 
@@ -361,7 +361,7 @@ class QueryResource(BaseResource):
             query_def.pop(field, None)
 
         if "query" in query_def:
-            query_def["query_text"] = query_def.pop("query")
+            query_def["query_text"] = decrypt(query_def.pop("query"))
 
         if "tags" in query_def:
             query_def["tags"] = [tag for tag in query_def["tags"] if tag]

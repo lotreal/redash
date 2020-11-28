@@ -5,6 +5,7 @@ import { Query } from "@/services/query";
 import notification from "@/services/notification";
 import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 import { policy } from "@/services/policy";
+import { Base64Encode as Encrypt } from "@/lib/encrypt";
 
 class SaveQueryError extends Error {
   constructor(message, detailedMessage = null) {
@@ -58,6 +59,7 @@ function doSaveQuery(data, { canOverwrite = false } = {}) {
     };
   }
 
+  data.query = Encrypt(data.query);
   return Query.save(data).catch(error => {
     if (get(error, "response.status") === 409) {
       if (canOverwrite) {
