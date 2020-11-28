@@ -58,8 +58,9 @@ function doSaveQuery(data, { canOverwrite = false } = {}) {
       parameters: map(data.options.parameters, p => p.toSaveableObject()),
     };
   }
-
-  data.query = Encrypt(data.query);
+  if (data.query !== undefined) {
+      data.query = Encrypt(data.query);
+  }
   return Query.save(data).catch(error => {
     if (get(error, "response.status") === 409) {
       if (canOverwrite) {
