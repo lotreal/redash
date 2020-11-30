@@ -303,6 +303,11 @@ class User(
 @generic_repr("id", "name", "type", "org_id")
 class Group(db.Model, BelongsToOrgMixin):
     DEFAULT_PERMISSIONS = [
+        "execute_query",
+        "list_dashboards",
+    ]
+
+    DEFAULT_AUTHOR_PERMISSIONS = [
         "create_dashboard",
         "create_query",
         "edit_dashboard",
