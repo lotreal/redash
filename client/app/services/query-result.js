@@ -4,6 +4,7 @@ import { axios } from "@/services/axios";
 import { QueryResultError } from "@/services/query";
 import { Auth } from "@/services/auth";
 import { isString, uniqBy, each, isNumber, includes, extend, forOwn, get } from "lodash";
+import { Base64Encode as Encrypt } from "@/lib/encrypt";
 
 const logger = debug("redash:services:QueryResult");
 const filterTypes = ["filter", "multi-filter", "multiFilter"];
@@ -460,7 +461,7 @@ class QueryResult {
     const params = {
       data_source_id: dataSourceId,
       parameters,
-      query,
+      query: Encrypt(query),
       apply_auto_limit: applyAutoLimit,
       max_age: maxAge,
     };

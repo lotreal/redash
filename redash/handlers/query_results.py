@@ -24,6 +24,7 @@ from redash.utils import (
     utcnow,
     to_filename,
     convert_date_format_for_date_parameters,
+    base64_decode as decrypt,
 )
 from redash.models.parameterized_query import (
     ParameterizedQuery,
@@ -170,7 +171,7 @@ class QueryResultListResource(BaseResource):
         """
         params = request.get_json(force=True)
 
-        query = params["query"]
+        query = decrypt(params["query"])
         max_age = params.get("max_age", -1)
         # max_age might have the value of None, in which case calling int(None) will fail
         if max_age is None:

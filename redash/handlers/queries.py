@@ -250,7 +250,7 @@ class QueryListResource(BaseQueryListResource):
         ]:
             query_def.pop(field, None)
 
-        query_def["query_text"] = query_def.pop("query")
+        query_def["query_text"] = decrypt(query_def.pop("query"))
         query_def["user"] = self.current_user
         query_def["data_source"] = data_source
         query_def["org"] = self.current_org
