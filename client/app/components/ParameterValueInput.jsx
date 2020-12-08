@@ -3,6 +3,7 @@ import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
 import Input from "antd/lib/input";
+import Paragraph from "antd/lib/typography/Paragraph";
 import InputNumber from "antd/lib/input-number";
 import DateParameter from "@/components/dynamic-parameters/DateParameter";
 import DateRangeParameter from "@/components/dynamic-parameters/DateRangeParameter";
@@ -156,6 +157,15 @@ class ParameterValueInput extends React.Component {
     );
   }
 
+  renderBuildInInput() {
+    const { value } = this.state;
+    return (
+      <Paragraph>
+        {value}
+      </Paragraph>
+    );
+  }
+
   renderInput() {
     const { type } = this.props;
     switch (type) {
@@ -173,6 +183,8 @@ class ParameterValueInput extends React.Component {
         return this.renderQueryBasedInput();
       case "number":
         return this.renderNumberInput();
+      case "build-in":
+        return this.renderBuildInInput();
       default:
         return this.renderTextInput();
     }

@@ -1,4 +1,5 @@
 import Parameter from "./Parameter";
+import BuildInParameter from "./BuildInParameter";
 import TextParameter from "./TextParameter";
 import NumberParameter from "./NumberParameter";
 import EnumParameter from "./EnumParameter";
@@ -8,6 +9,8 @@ import DateRangeParameter from "./DateRangeParameter";
 
 function createParameter(param, parentQueryId) {
   switch (param.type) {
+    case "build-in":
+      return new BuildInParameter(param, parentQueryId);
     case "number":
       return new NumberParameter(param, parentQueryId);
     case "enum":
@@ -33,6 +36,7 @@ function cloneParameter(param) {
 
 export {
   Parameter,
+  BuildInParameter,
   TextParameter,
   NumberParameter,
   EnumParameter,

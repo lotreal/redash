@@ -193,6 +193,7 @@ export class Query {
   }
 
   getParametersDefs(update = true) {
+    console.log(this.getParameters().get(update));
     return this.getParameters().get(update);
   }
 

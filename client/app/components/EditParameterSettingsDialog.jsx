@@ -175,8 +175,21 @@ function EditParameterSettingsDialog(props) {
             </Option>
             <Option value="datetime-range">Date and Time Range</Option>
             <Option value="datetime-range-with-seconds">Date and Time Range (with seconds)</Option>
+            <Option value="build-in">System Build-ins</Option>
           </Select>
         </Form.Item>
+        {param.type === "build-in" && (
+          <Form.Item label="Values" help="System build-in parameters" {...formItemProps}>
+            <Select value={param.value} onChange={value => setParam({ ...param, value })}>
+              <Option value="current:user:id">
+                The UID of currently logged-in user.
+              </Option>
+              <Option value="current:user:cities">
+                TODO: The city of currently logged-in user.
+              </Option>
+            </Select>
+          </Form.Item>
+        )}
         {param.type === "enum" && (
           <Form.Item label="Values" help="Dropdown list values (newline delimited)" {...formItemProps}>
             <Input.TextArea
