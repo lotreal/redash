@@ -184,8 +184,8 @@ function EditParameterSettingsDialog(props) {
               <Option value="current:user:id">
                 The UID of currently logged-in user.
               </Option>
-              <Option value="current:user:cities">
-                TODO: The city of currently logged-in user.
+              <Option value="current:user:email">
+                The email of currently logged-in user.
               </Option>
             </Select>
           </Form.Item>

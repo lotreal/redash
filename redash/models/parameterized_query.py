@@ -37,13 +37,23 @@ def dropdown_values(query_id, org):
     return list(map(pluck, data["rows"]))
 
 
+def get_build_in_parameter_value(value):
+    user = current_user._get_current_object()
+    if value == 'current:user:id':
+        return user.id
+    if value == 'current:user:email':
+        return user.email
+
 def join_parameter_list_values(parameters, schema):
     updated_parameters = {}
     for (key, value) in parameters.items():
+        definition = next(
+            (definition for definition in schema if definition["name"] == key), {}
+        )
+        if definition["type"] == 'build-in':
+            value = get_build_in_parameter_value(value)
+
         if isinstance(value, list):
-            definition = next(
-                (definition for definition in schema if definition["name"] == key), {}
-            )
             multi_values_options = definition.get("multiValuesOptions", {})
             separator = str(multi_values_options.get("separator", ","))
             prefix = str(multi_values_options.get("prefix", ""))
@@ -53,7 +63,6 @@ def join_parameter_list_values(parameters, schema):
             )
         else:
             updated_parameters[key] = value
-    updated_parameters['uid'] = current_user._get_current_object().id
     return updated_parameters
 
 
@@ -161,7 +170,7 @@ class ParameterizedQuery(object):
             enum_options = enum_options.split("\n")
 
         validators = {
-            "build-in": lambda value: value == "current:user:id",
+            "build-in": lambda value: value in ["current:user:id", "current:user:email"],
             "text": lambda value: isinstance(value, str),
             "number": _is_number,
             "enum": lambda value: _is_value_within_options(
