@@ -157,6 +157,7 @@ function EditParameterSettingsDialog(props) {
             </Option>
             <Option value="enum">Dropdown List</Option>
             <Option value="query">Query Based Dropdown List</Option>
+            <Option value="build-in">System Build-ins</Option>
             <Option disabled key="dv1">
               <Divider className="select-option-divider" />
             </Option>
@@ -175,7 +176,6 @@ function EditParameterSettingsDialog(props) {
             </Option>
             <Option value="datetime-range">Date and Time Range</Option>
             <Option value="datetime-range-with-seconds">Date and Time Range (with seconds)</Option>
-            <Option value="build-in">System Build-ins</Option>
           </Select>
         </Form.Item>
         {param.type === "build-in" && (
