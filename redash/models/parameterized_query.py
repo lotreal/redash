@@ -22,6 +22,10 @@ def _load_result(query_id, org):
     from redash import models
 
     query = models.Query.get_by_id_and_org(query_id, org)
+    if query.parameters:
+        d = query.parameterized.apply({p["title"]: p["value"] for p in query.parameters})
+        query_result = query.data_source.query_runner.run_query(d.text, current_user._get_current_object())
+        return json_loads(query_result[0])
 
     if query.data_source:
         query_result = models.QueryResult.get_by_id_and_org(
