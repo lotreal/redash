@@ -7,6 +7,8 @@ from redash.permissions import require_access, view_only
 from funcy import distinct
 from dateutil.parser import parse
 
+BUILD_IN_PARAMETER_VALUES = ["current:user:id", "current:user:email"]
+
 
 def _pluck_name_and_value(default_column, row):
     row = {k.lower(): v for k, v in row.items()}
@@ -37,6 +39,12 @@ def dropdown_values(query_id, org):
     return list(map(pluck, data["rows"]))
 
 
+def predict_parameter_type(value):
+    if value in BUILD_IN_PARAMETER_VALUES:
+        return 'build-in'
+    return ''
+
+
 def get_build_in_parameter_value(value):
     user = current_user._get_current_object()
     if value == 'current:user:id':
@@ -44,13 +52,14 @@ def get_build_in_parameter_value(value):
     if value == 'current:user:email':
         return user.email
 
+
 def join_parameter_list_values(parameters, schema):
     updated_parameters = {}
     for (key, value) in parameters.items():
         definition = next(
             (definition for definition in schema if definition["name"] == key), {}
         )
-        if definition["type"] == 'build-in':
+        if definition.get("type", predict_parameter_type(value)) == 'build-in':
             value = get_build_in_parameter_value(value)
 
         if isinstance(value, list):
@@ -170,7 +179,7 @@ class ParameterizedQuery(object):
             enum_options = enum_options.split("\n")
 
         validators = {
-            "build-in": lambda value: value in ["current:user:id", "current:user:email"],
+            "build-in": lambda value: value in BUILD_IN_PARAMETER_VALUES,
             "text": lambda value: isinstance(value, str),
             "number": _is_number,
             "enum": lambda value: _is_value_within_options(
