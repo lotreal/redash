@@ -3,8 +3,9 @@ import React from "react";
 import PropTypes from "prop-types";
 import SelectWithVirtualScroll from "@/components/SelectWithVirtualScroll";
 import Input from "antd/lib/input";
-import Paragraph from "antd/lib/typography/Paragraph";
+import Button from "antd/lib/button";
 import InputNumber from "antd/lib/input-number";
+import {SmileTwoTone} from "@ant-design/icons";
 import DateParameter from "@/components/dynamic-parameters/DateParameter";
 import DateRangeParameter from "@/components/dynamic-parameters/DateRangeParameter";
 import QueryBasedParameterInput from "./QueryBasedParameterInput";
@@ -160,9 +161,9 @@ class ParameterValueInput extends React.Component {
   renderBuildInInput() {
     const { value } = this.state;
     return (
-      <Paragraph>
+      <Button type="dashed" icon={<SmileTwoTone twoToneColor="#FF6E59" />} >
         {value}
-      </Paragraph>
+      </Button>
     );
   }
 
