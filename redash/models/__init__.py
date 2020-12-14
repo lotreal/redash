@@ -451,6 +451,45 @@ def should_schedule_next(
 
 @gfk_type
 @generic_repr(
+    "userid",
+    "name",
+    "mobile",
+    "email",
+)
+class Wecom(TimestampMixin, db.Model):
+    id = primary_key("Query")
+
+    userid = Column(db.String(255))
+    name = Column(db.String(255))
+    email = Column(db.String(255))
+    mobile = Column(db.String(255))
+
+    main_department = Column(db.Integer())
+    position = Column(db.String(255))
+
+    avatar = Column(db.String(255))
+    thumb_avatar = Column(db.String(255))
+
+    status = Column(db.Integer())
+
+    redash_user_id = Column(key_type("User"), db.ForeignKey("users.id"))
+    user = db.relationship(User, foreign_keys=[redash_user_id])
+
+    __tablename__ = "vendor_wecom"
+
+    @classmethod
+    def create(cls, **kwargs):
+        query = cls(**kwargs)
+        return query
+
+    @classmethod
+    def get_user_by_wecom_userid(cls, userid):
+        query = cls.query.filter(cls.userid == userid)
+        return query.one().user
+
+
+@gfk_type
+@generic_repr(
     "id",
     "name",
     "query_hash",

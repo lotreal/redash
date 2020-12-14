@@ -156,6 +156,14 @@ FEATURE_POLICY = os.environ.get("REDASH_REFERRER_POLICY", "")
 
 MULTI_ORG = parse_boolean(os.environ.get("REDASH_MULTI_ORG", "false"))
 
+WECOM_CORP_ID = os.environ.get("REDASH_WECOM_CORP_ID", "")
+WECOM_AGENT_ID = os.environ.get("REDASH_WECOM_AGENT_ID", "")
+WECOM_AGENT_SECRET = os.environ.get("REDASH_WECOM_AGENT_SECRET", "")
+WECOM_LOGIN_CALLBACK = os.environ.get(
+    "REDASH_WECOM_LOGIN_CALLBACK", "http://127.0.0.1:5000/oauth/wecom_callback"
+)
+WECOM_OAUTH_ENABLED = bool(WECOM_CORP_ID)
+
 GOOGLE_CLIENT_ID = os.environ.get("REDASH_GOOGLE_CLIENT_ID", "")
 GOOGLE_CLIENT_SECRET = os.environ.get("REDASH_GOOGLE_CLIENT_SECRET", "")
 GOOGLE_OAUTH_ENABLED = bool(GOOGLE_CLIENT_ID and GOOGLE_CLIENT_SECRET)

@@ -242,6 +242,7 @@ def logout_and_redirect_to_index():
 
 def init_app(app):
     from redash.authentication import (
+        wecom_oauth,
         google_oauth,
         saml_auth,
         remote_user_auth,
@@ -252,7 +253,7 @@ def init_app(app):
     login_manager.anonymous_user = models.AnonymousUser
 
     from redash.security import csrf
-    for auth in [google_oauth, saml_auth, remote_user_auth, ldap_auth]:
+    for auth in [wecom_oauth, google_oauth, saml_auth, remote_user_auth, ldap_auth]:
         blueprint = auth.blueprint
         csrf.exempt(blueprint)
         app.register_blueprint(blueprint)
@@ -272,6 +273,9 @@ def create_and_login_user(org, name, email, picture=None):
         if user_object.name != name:
             logger.debug("Updating user name (%r -> %r)", user_object.name, name)
             user_object.name = name
+            models.db.session.commit()
+        if picture is not None:
+            user_object._profile_image_url = picture
             models.db.session.commit()
     except NoResultFound:
         logger.debug("Creating user object (%r)", name)

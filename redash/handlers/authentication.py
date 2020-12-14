@@ -17,6 +17,7 @@ from redash.handlers import routes
 from redash.handlers.base import json_response, org_scoped_rule
 from redash.version_check import get_latest_version
 from sqlalchemy.orm.exc import NoResultFound
+from vendor.wecom import WECOM_CORP
 
 logger = logging.getLogger(__name__)
 
@@ -93,10 +94,13 @@ def render_token_login_page(template, org_slug, token, invite):
             return redirect(url_for("redash.index", org_slug=org_slug))
 
     google_auth_url = get_google_auth_url(url_for("redash.index", org_slug=org_slug))
+    wecom_auth_url = WECOM_CORP.get_wecom_auth_url(state=token)
 
     return (
         render_template(
             template,
+            show_wecom_openid=settings.WECOM_OAUTH_ENABLED,
+            wecom_auth_url=wecom_auth_url,
             show_google_openid=settings.GOOGLE_OAUTH_ENABLED,
             google_auth_url=google_auth_url,
             show_saml_login=current_org.get_setting("auth_saml_enabled"),
@@ -215,12 +219,15 @@ def login(org_slug=None):
             flash("Wrong email or password.")
 
     google_auth_url = get_google_auth_url(next_path)
+    wecom_auth_url = WECOM_CORP.get_wecom_auth_url(state="login")
 
     return render_template(
         "login.html",
         org_slug=org_slug,
         next=next_path,
         email=request.form.get("email", ""),
+        show_wecom_openid=settings.WECOM_OAUTH_ENABLED,
+        wecom_auth_url=wecom_auth_url,
         show_google_openid=settings.GOOGLE_OAUTH_ENABLED,
         google_auth_url=google_auth_url,
         show_password_login=current_org.get_setting("auth_password_login_enabled"),

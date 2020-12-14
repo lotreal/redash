@@ -13,6 +13,13 @@
       {% endif %}
     {% endwith %}
 
+    {% if show_wecom_openid %}
+      <a href="{{ wecom_auth_url }}" class="login-button btn btn-default btn-block">
+        <img src="/static/images/wecom_logo.png">
+        Login with WeCom
+      </a>
+    {% endif %}
+
     {% if show_google_openid %}
       <a href="{{ google_auth_url }}" class="login-button btn btn-default btn-block">
         <img src="/static/images/google_logo.svg">
