@@ -35,6 +35,7 @@ def wework_callback():
     state = request.args.get("state", None)
     code = request.args.get("code", None)
     org = current_org._get_current_object()
+    user = current_user._get_current_object()
 
     def get_user_by_wecom_code(code):
         return WECOM_CORP.get_wecom_user_by_code(code)
@@ -54,6 +55,14 @@ def wework_callback():
 
     try:
         wecom_user = get_user_by_wecom_code(code)
+        if not wecom_user.enabled():
+            return (
+                render_template(
+                    "error.html",
+                    error_message="Your WeCom Account Has Been Disabled.Please contact administrator.",
+                ),
+                400,
+            )
     except Exception:
         return (
             render_template(
@@ -69,6 +78,14 @@ def wework_callback():
         else:
             if state == "link":
                 user = current_user._get_current_object()
+                if user.is_anonymous():
+                    return (
+                        render_template(
+                            "error.html",
+                            error_message="Link to WeCom Error. Please login with your account first.",
+                        ),
+                        400,
+                    )
             else:  # invite
                 user = get_user_by_invite_token(state)
 
