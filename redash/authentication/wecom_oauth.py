@@ -35,7 +35,6 @@ def wework_callback():
     state = request.args.get("state", None)
     code = request.args.get("code", None)
     org = current_org._get_current_object()
-    user = current_user._get_current_object()
 
     def get_user_by_wecom_code(code):
         return WECOM_CORP.get_wecom_user_by_code(code)
@@ -75,10 +74,18 @@ def wework_callback():
     try:
         if state == "login":
             user = models.Wecom.get_user_by_wecom_userid(wecom_user.userid)
+            if user is None:
+                return (
+                    render_template(
+                        "error.html",
+                        error_message="Invalid Login. Please link your account to WeCom first.",
+                    ),
+                    400,
+                )
         else:
             if state == "link":
                 user = current_user._get_current_object()
-                if user.is_anonymous():
+                if user.is_anonymous:
                     return (
                         render_template(
                             "error.html",
@@ -89,7 +96,16 @@ def wework_callback():
             else:  # invite
                 user = get_user_by_invite_token(state)
 
-            create_wecom_profile(user, wecom_user)
+            try:
+                create_wecom_profile(user, wecom_user)
+            except Exception:
+                return (
+                    render_template(
+                        "error.html",
+                        error_message="Link to WeCom Error. This account has been linked.",
+                    ),
+                    400,
+                )
 
         _login = create_and_login_user(org, user.name, user.email, wecom_user.thumb_avatar)
         if _login is None:

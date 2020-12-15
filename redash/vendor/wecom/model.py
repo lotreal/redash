@@ -57,7 +57,7 @@ class WeComCorp:
     def create_api(self):
         return CorpApi(self.app_id, self.agent_secret)
 
-    def get_wecom_auth_url(self, state="easi"):
+    def get_wecom_auth_url(self, state=""):
         args = "&".join(
             [
                 f"{k}={v}"

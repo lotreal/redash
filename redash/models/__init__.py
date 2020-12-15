@@ -485,7 +485,10 @@ class Wecom(TimestampMixin, db.Model):
     @classmethod
     def get_user_by_wecom_userid(cls, userid):
         query = cls.query.filter(cls.userid == userid)
-        return query.one().user
+        try:
+            return query.one().user
+        except NoResultFound:
+            return None
 
 
 @gfk_type
