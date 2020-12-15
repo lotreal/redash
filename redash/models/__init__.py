@@ -475,7 +475,7 @@ class Wecom(TimestampMixin, db.Model):
     redash_user_id = Column(key_type("User"), db.ForeignKey("users.id"))
     user = db.relationship(User, foreign_keys=[redash_user_id])
 
-    __tablename__ = "vendor_wecom"
+    __tablename__ = "wecom"
 
     @classmethod
     def create(cls, **kwargs):

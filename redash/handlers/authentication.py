@@ -212,7 +212,24 @@ def login(org_slug=None):
             ):
                 remember = "remember" in request.form
                 login_user(user, remember=remember)
-                return redirect(next_path)
+
+                if settings.WECOM_OAUTH_ENABLED:
+                    wecom_auth_url = WECOM_CORP.get_wecom_auth_url(state="link")
+                    return (
+                        render_template(
+                            "error.html",
+                            error_message=f"""
+    Password authentication will not available for BI user.<br />
+    Please link your account to WeCom (企业微信) now.<br /><br />
+    <a href="{wecom_auth_url}" class="login-button btn btn-default btn-block">
+      <img src="/static/images/wecom_logo.png">
+      Link to WeCom
+    </a>""",
+                        ),
+                        400,
+                    )
+                else:
+                    return redirect(next_path)
             else:
                 flash("Wrong email or password.")
         except NoResultFound:

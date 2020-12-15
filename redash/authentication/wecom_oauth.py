@@ -1,7 +1,7 @@
 import logging
 
-import requests
-from flask import redirect, url_for, Blueprint, flash, request, session, render_template
+from flask import redirect, url_for, Blueprint, request, render_template
+from flask_login import current_user
 from flask_oauthlib.client import OAuth
 
 from redash.authentication import (
@@ -45,6 +45,7 @@ def wework_callback():
 
     def create_wecom_profile(user, wecom_user):
         query = models.Wecom.create(
+            id=user.id,
             user=user,
             **wecom_user.to_dict(),
         )
@@ -52,17 +53,28 @@ def wework_callback():
         models.db.session.commit()
 
     try:
-        if state == "login":
-            wecom_user = get_user_by_wecom_code(code)
-            user = models.Wecom.get_user_by_wecom_userid(wecom_user.userid)
-            _login = create_and_login_user(org, user.name, user.email, wecom_user.thumb_avatar)
-        else:
-            # "Invalid WeCom token. Please ask for a new one."
-            wecom_user = WECOM_CORP.get_wecom_user_by_code(code)
-            user = get_user_by_invite_token(state)
-            create_wecom_profile(user, wecom_user)
-            _login = create_and_login_user(org, user.name, user.email, wecom_user.thumb_avatar)
+        wecom_user = get_user_by_wecom_code(code)
+    except Exception:
+        return (
+            render_template(
+                "error.html",
+                error_message="Invalid Token. Please ask for a new one.",
+            ),
+            400,
+        )
 
+    try:
+        if state == "login":
+            user = models.Wecom.get_user_by_wecom_userid(wecom_user.userid)
+        else:
+            if state == "link":
+                user = current_user._get_current_object()
+            else:  # invite
+                user = get_user_by_invite_token(state)
+
+            create_wecom_profile(user, wecom_user)
+
+        _login = create_and_login_user(org, user.name, user.email, wecom_user.thumb_avatar)
         if _login is None:
             return logout_and_redirect_to_index()
 
@@ -77,8 +89,7 @@ def wework_callback():
         return (
             render_template(
                 "error.html",
-                error_message="Invalid Token. Please ask for a new one.",
+                error_message="Invalid Login.",
             ),
             400,
         )
-
