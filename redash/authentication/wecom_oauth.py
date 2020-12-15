@@ -52,60 +52,34 @@ def wework_callback():
         models.db.session.add(query)
         models.db.session.commit()
 
+    def error(message, ret_code=400):
+        return render_template("error.html", error_message=message), ret_code
+
     try:
         wecom_user = get_user_by_wecom_code(code)
         if not wecom_user.enabled():
-            return (
-                render_template(
-                    "error.html",
-                    error_message="Your WeCom Account Has Been Disabled.Please contact administrator.",
-                ),
-                400,
-            )
-    except Exception:
-        return (
-            render_template(
-                "error.html",
-                error_message="Invalid Token. Please ask for a new one.",
-            ),
-            400,
-        )
+            return error("Your WeCom Account Has Been Disabled.Please contact administrator.")
+    except:
+        return error("Invalid Token. Please ask for a new one.")
 
     try:
         if state == "login":
             user = models.Wecom.get_user_by_wecom_userid(wecom_user.userid)
             if user is None:
-                return (
-                    render_template(
-                        "error.html",
-                        error_message="Invalid Login. Please link your account to WeCom first.",
-                    ),
-                    400,
-                )
+                return error("Invalid Login. Please link your account to WeCom first.")
         else:
+            user = models.Wecom.get_user_by_wecom_userid(wecom_user.userid)
+            if user is not None:
+                return error("Link to WeCom Error. This account has been linked.")
+
             if state == "link":
                 user = current_user._get_current_object()
                 if user.is_anonymous:
-                    return (
-                        render_template(
-                            "error.html",
-                            error_message="Link to WeCom Error. Please login with your account first.",
-                        ),
-                        400,
-                    )
+                    return error("Link to WeCom Error. Please login with your account first.")
             else:  # invite
                 user = get_user_by_invite_token(state)
 
-            try:
-                create_wecom_profile(user, wecom_user)
-            except Exception:
-                return (
-                    render_template(
-                        "error.html",
-                        error_message="Link to WeCom Error. This account has been linked.",
-                    ),
-                    400,
-                )
+            create_wecom_profile(user, wecom_user)
 
         _login = create_and_login_user(org, user.name, user.email, wecom_user.thumb_avatar)
         if _login is None:
@@ -118,11 +92,5 @@ def wework_callback():
 
         return redirect(next_path)
 
-    except Exception:
-        return (
-            render_template(
-                "error.html",
-                error_message="Invalid Login.",
-            ),
-            400,
-        )
+    except:
+        return error("Invalid Login.")
