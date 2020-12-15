@@ -17,7 +17,7 @@ from redash.handlers import routes
 from redash.handlers.base import json_response, org_scoped_rule
 from redash.version_check import get_latest_version
 from sqlalchemy.orm.exc import NoResultFound
-from vendor.wecom import WECOM_CORP
+from redash.vendor.wecom import WECOM_CORP
 
 logger = logging.getLogger(__name__)
 

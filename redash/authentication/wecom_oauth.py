@@ -8,7 +8,7 @@ from redash.authentication import (
     create_and_login_user,
     logout_and_redirect_to_index,
 )
-from vendor.wecom import WECOM_CORP
+from redash.vendor.wecom import WECOM_CORP
 
 from redash import models
 from redash.authentication import current_org, get_next_path
