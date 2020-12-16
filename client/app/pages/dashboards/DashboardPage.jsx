@@ -21,6 +21,7 @@ import useImmutableCallback from "@/lib/hooks/useImmutableCallback";
 
 import useDashboard from "./hooks/useDashboard";
 import DashboardHeader from "./components/DashboardHeader";
+import WaterMark from "@/lib/waterMark";
 
 import "./DashboardPage.less";
 
@@ -191,7 +192,7 @@ routes.register(
   "Dashboards.LegacyViewOrEdit",
   routeWithUserSession({
     path: "/dashboard/:dashboardSlug",
-    render: pageProps => <DashboardPage {...pageProps} />,
+    render: pageProps => <WaterMark><DashboardPage {...pageProps} /></WaterMark>,
   })
 );
 
@@ -199,6 +200,6 @@ routes.register(
   "Dashboards.ViewOrEdit",
   routeWithUserSession({
     path: "/dashboards/:dashboardId([^-]+)(-.*)?",
-    render: pageProps => <DashboardPage {...pageProps} />,
+    render: pageProps => <WaterMark><DashboardPage {...pageProps} /></WaterMark>,
   })
 );
