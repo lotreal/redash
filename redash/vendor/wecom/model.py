@@ -57,6 +57,23 @@ class WeComCorp:
     def create_api(self):
         return CorpApi(self.app_id, self.agent_secret)
 
+    def get_wecom_direct_auth_url(self, state=""):
+        args = "&".join(
+            [
+                f"{k}={v}"
+                for k, v in {
+                    "appid": self.app_id,
+                    "agentid": self.agent_id,
+                    "redirect_uri": quote_plus(self.login_callback),
+                    "response_type": "code",
+                    "scope": "snsapi_base",
+                    "state": state,
+                }.items()
+            ]
+        )
+        oauth2_authorize_url = "https://open.weixin.qq.com/connect/oauth2/authorize"
+        return f"{oauth2_authorize_url}?{args}#wechat_redirect"
+
     def get_wecom_auth_url(self, state=""):
         args = "&".join(
             [
