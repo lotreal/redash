@@ -57,8 +57,7 @@ class DashboardListResource(BaseResource):
         if search_term:
             results = models.Dashboard.search(
                 self.current_org,
-                self.current_user.group_ids,
-                self.current_user.id,
+                self.current_user,
                 search_term,
             )
         else:
