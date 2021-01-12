@@ -5,7 +5,7 @@ import ReactWaterMark from 'react-watermark-component';
 
 export default function WaterMark({children}) {
   const beginAlarm = function () {
-    console.log('start alarm');
+    // console.log('start alarm');
   };
   const options = {
     chunkWidth: 200,
