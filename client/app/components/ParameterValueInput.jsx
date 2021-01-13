@@ -103,7 +103,6 @@ class ParameterValueInput extends React.Component {
       <SelectWithVirtualScroll
         className={this.props.className}
         mode={parameter.multiValuesOptions ? "multiple" : "default"}
-        optionFilterProp="children"
         value={normalize(value)}
         onChange={this.onSelect}
         options={map(enumOptionsArray, opt => ({ label: String(opt), value: opt }))}
@@ -122,7 +121,6 @@ class ParameterValueInput extends React.Component {
       <QueryBasedParameterInput
         className={this.props.className}
         mode={parameter.multiValuesOptions ? "multiple" : "default"}
-        optionFilterProp="children"
         parameter={parameter}
         value={value}
         queryId={queryId}
