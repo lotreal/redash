@@ -24,7 +24,7 @@ function EditTagsDialog({ dialog, tags, getAvailableTags }) {
     let isCancelled = false;
     getAvailableTags().then(availableTags => {
       if (!isCancelled) {
-        setAvailableTags(uniq(compact(map(availableTags, trim))));
+        setAvailableTags(uniq(compact(availableTags)));
         setIsLoading(false);
       }
     });
@@ -46,12 +46,10 @@ function EditTagsDialog({ dialog, tags, getAvailableTags }) {
         className="w-100"
         placeholder="Add some tags..."
         defaultValue={values}
+        options={availableTags}
         onChange={v => setValues(compact(map(v, trim)))}
         disabled={isLoading}
         loading={isLoading}>
-        {map(availableTags, tag => (
-          <Select.Option key={tag}>{tag}</Select.Option>
-        ))}
       </Select>
     </Modal>
   );

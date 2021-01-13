@@ -1,7 +1,7 @@
 import React from "react";
 import cx from "classnames";
 import PropTypes from "prop-types";
-import { map, includes } from "lodash";
+import { includes } from "lodash";
 import Button from "antd/lib/button";
 import Dropdown from "antd/lib/dropdown";
 import Menu from "antd/lib/menu";
@@ -20,7 +20,7 @@ import { DashboardStatusEnum } from "../hooks/useDashboard";
 import "./DashboardHeader.less";
 
 function getDashboardTags() {
-  return getTags("api/dashboards/tags").then(tags => map(tags, t => t.name));
+  return getTags("api/dashboards/avaiable_tags");
 }
 
 function buttonType(value) {

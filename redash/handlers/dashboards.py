@@ -353,6 +353,20 @@ class DashboardTagsResource(BaseResource):
             return {"tags": [{"name": name, "count": count} for name, count in tags if not is_special_tag(name)]}
 
 
+class DashboardAvailableTagsResource(BaseResource):
+    @require_permission("list_dashboards")
+    def get(self):
+        """
+        Lists all available dashboard tags.
+        """
+        tags = models.Dashboard.all_tags(self.current_org, self.current_user)
+        normal_tags = [{"value": name, "label": name} for name, count in tags if not is_special_tag(name)]
+        groups = models.Group.all(self.current_org)
+        role_tags = [{ "value": f"role:{g.id}", "label": f"acl:{g.name}" } for g in groups]
+        available_tags = normal_tags + role_tags
+        return {"tags": available_tags}
+
+
 class DashboardFavoriteListResource(BaseResource):
     def get(self):
         search_term = request.args.get("q")

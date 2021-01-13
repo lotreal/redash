@@ -17,6 +17,7 @@ from redash.handlers.dashboards import (
     DashboardShareResource,
     DashboardTagsResource,
     PublicDashboardResource,
+    DashboardAvailableTagsResource,
 )
 from redash.handlers.data_sources import (
     DataSourceListResource,
@@ -213,7 +214,9 @@ api.add_org_resource(QueryTagsResource, "/api/queries/tags", endpoint="query_tag
 api.add_org_resource(
     DashboardTagsResource, "/api/dashboards/tags", endpoint="dashboard_tags"
 )
-
+api.add_org_resource(
+    DashboardAvailableTagsResource, "/api/dashboards/avaiable_tags", endpoint="dashboard_avaiable_tags"
+)
 api.add_org_resource(
     QuerySearchResource, "/api/queries/search", endpoint="queries_search"
 )
