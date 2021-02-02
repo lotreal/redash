@@ -22,7 +22,7 @@ from redash.serializers import (
     DashboardSerializer,
     public_dashboard,
 )
-from models.parameterized_query import update_query_based_parameter_default_value
+from redash.models.parameterized_query import update_query_based_parameter_default_value
 from sqlalchemy.orm.exc import StaleDataError
 
 
