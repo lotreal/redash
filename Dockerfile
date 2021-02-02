@@ -57,7 +57,7 @@ RUN apt-get update && \
     libsasl2-dev \
     unzip \
     libsasl2-modules-gssapi-mit && \
-  # MSSQL ODBC Driver:  
+  # MSSQL ODBC Driver:
   curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - && \
   curl https://packages.microsoft.com/config/debian/10/prod.list > /etc/apt/sources.list.d/mssql-release.list && \
   apt-get update && \
@@ -80,7 +80,7 @@ ENV PIP_DISABLE_PIP_VERSION_CHECK=1
 ENV PIP_NO_CACHE_DIR=1
 
 # Use legacy resolver to work around broken build due to resolver changes in pip
-ENV PIP_USE_DEPRECATED=legacy-resolver
+# ENV PIP_USE_DEPRECATED=legacy-resolver
 
 # We first copy only the requirements file, to avoid rebuilding on every file
 # change.
