@@ -163,10 +163,13 @@ class DashboardResource(BaseResource):
             dashboard, with_widgets=True, user=self.current_user
         ).serialize()
 
-        for widget in response['widgets']:
-            update_query_based_parameter_default_value(
-                widget['visualization']['query']['options']['parameters'],
-                self.current_org)
+        for widget in response.get('widgets', []):
+            try:
+                update_query_based_parameter_default_value(
+                    widget['visualization']['query']['options']['parameters'],
+                    self.current_org)
+            except:
+                pass
 
         api_key = models.ApiKey.get_by_object(dashboard)
         if api_key:
