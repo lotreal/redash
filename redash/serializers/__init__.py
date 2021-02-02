@@ -12,8 +12,7 @@ from rq.timeouts import JobTimeoutException
 from redash import models
 from redash.permissions import has_access, view_only
 from redash.utils import json_loads
-from redash.models.parameterized_query import ParameterizedQuery, dropdown_values
-
+from redash.models.parameterized_query import ParameterizedQuery
 
 from .query_result import (
     serialize_query_result,
@@ -101,17 +100,6 @@ class QuerySerializer(Serializer):
         return result
 
 
-def update_query_based_parameter_default_value(parameters, org):
-    for parameter in parameters:
-        if parameter.get('type') == 'query':
-            query_id = parameter.get('queryId')
-            if query_id is not None:
-                values = dropdown_values(query_id, org)
-                if len(values) > 0:
-                    parameter.update(value=values[0].get('value'))
-    return parameters
-
-
 def serialize_query(
     query,
     with_stats=False,
@@ -119,7 +107,6 @@ def serialize_query(
     with_user=True,
     with_last_modified_by=True,
 ):
-    update_query_based_parameter_default_value(query.options.get("parameters"), query.org)
     d = {
         "id": query.id,
         "latest_query_data_id": query.latest_query_data_id,

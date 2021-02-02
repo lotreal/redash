@@ -25,7 +25,8 @@ def _load_result(query_id, org):
     if query.parameters:
         d = query.parameterized.apply({p["title"]: p["value"] for p in query.parameters})
         query_result = query.data_source.query_runner.run_query(d.text, current_user._get_current_object())
-        return json_loads(query_result[0])
+        if query_result[0] is not None:
+            return json_loads(query_result[0])
 
     if query.data_source:
         query_result = models.QueryResult.get_by_id_and_org(
@@ -236,3 +237,16 @@ class QueryDetachedFromDataSourceError(Exception):
         super(QueryDetachedFromDataSourceError, self).__init__(
             "This query is detached from any data source. Please select a different query."
         )
+
+
+def update_query_based_parameter_default_value(parameters, org):
+    for parameter in parameters:
+        if parameter.get('type') == 'query':
+            query_id = parameter.get('queryId')
+            if query_id is not None:
+                try:
+                    values = dropdown_values(query_id, org)
+                    if len(values) > 0:
+                        parameter.update(value=values[0].get('value'))
+                except:
+                    pass

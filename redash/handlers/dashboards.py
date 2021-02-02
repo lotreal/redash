@@ -22,6 +22,7 @@ from redash.serializers import (
     DashboardSerializer,
     public_dashboard,
 )
+from models.parameterized_query import update_query_based_parameter_default_value
 from sqlalchemy.orm.exc import StaleDataError
 
 
@@ -161,6 +162,11 @@ class DashboardResource(BaseResource):
         response = DashboardSerializer(
             dashboard, with_widgets=True, user=self.current_user
         ).serialize()
+
+        for widget in response['widgets']:
+            update_query_based_parameter_default_value(
+                widget['visualization']['query']['options']['parameters'],
+                self.current_org)
 
         api_key = models.ApiKey.get_by_object(dashboard)
         if api_key:
