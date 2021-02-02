@@ -509,6 +509,16 @@ class QueryTagsResource(BaseResource):
         return {"tags": [{"name": name, "count": count} for name, count in tags]}
 
 
+class QueryAvailableTagsResource(BaseResource):
+    def get(self):
+        """
+        Lists all available query tags.
+        """
+        tags = models.Query.all_tags(self.current_user, include_drafts=True)
+        available_tags = [{"value": name, "label": name} for name, count in tags]
+        return {"tags": available_tags}
+
+
 class QueryFavoriteListResource(BaseResource):
     def get(self):
         search_term = request.args.get("q")

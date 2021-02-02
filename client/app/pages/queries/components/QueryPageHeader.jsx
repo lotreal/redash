@@ -25,7 +25,7 @@ import usePermissionsEditorDialog from "../hooks/usePermissionsEditorDialog";
 import "./QueryPageHeader.less";
 
 function getQueryTags() {
-  return getTags("api/queries/tags").then(tags => map(tags, t => t.name));
+  return getTags("api/queries/avaiable_tags");
 }
 
 function createMenu(menu) {

@@ -63,6 +63,7 @@ from redash.handlers.queries import (
     QuerySearchResource,
     QueryTagsResource,
     QueryRegenerateApiKeyResource,
+    QueryAvailableTagsResource,
 )
 from redash.handlers.query_results import (
     JobResource,
@@ -211,6 +212,9 @@ api.add_org_resource(
 )
 
 api.add_org_resource(QueryTagsResource, "/api/queries/tags", endpoint="query_tags")
+api.add_org_resource(
+    QueryAvailableTagsResource, "/api/queries/avaiable_tags", endpoint="query_avaiable_tags"
+)
 api.add_org_resource(
     DashboardTagsResource, "/api/dashboards/tags", endpoint="dashboard_tags"
 )
